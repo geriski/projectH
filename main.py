@@ -1,28 +1,48 @@
 from lxml import html
 import requests
+import time
 
 modelpage = requests.get(
     'https://www.hasznaltauto.hu/szemelyauto/abarth/')
 tree = html.fromstring(modelpage.content)
-carpages = tree.xpath('//a[@class=""]/@href')
 
-hirdetes_kodok = tree.xpath('//div[@class="talalatisor-info '
-                           'talalatisor-hirkod"]//text()')
-carnames = tree.xpath('//div[@class="col-xs-28 col-sm-19 '
-                      'cim-kontener"]/h3/a/text()')
-hirdetes_kodok =[w.replace('Hirdetéskód: ', '')for w in hirdetes_kodok]
-hirdetes_kodok =[w.replace('(', '')for w in hirdetes_kodok]
-hirdetes_kodok =[w.replace(')', '')for w in hirdetes_kodok]
-hirdetes_kodok =[w.replace('', '')for w in hirdetes_kodok]
+#get the next url list, where the url of the cars can be found
+maxlist = tree.xpath('//li[@class="last"]/a/@href')
+string = maxlist[0]
+len = string.find('page')
+maxpage = string[(len)+4:]
+link = string[:len]
+pagelists = []
+for maxpage in range(1,int(maxpage)+1):
+    pagelists.append(str(link) + "page" + str(maxpage))
 
-#Build a dictionary with the webpages and car ID's
-cars_pages = dict(zip(hirdetes_kodok, carpages))
+carpages_all =[]
+for pagelist in pagelists:
+    pagelis = requests.get(pagelist)
+    tree = html.fromstring(pagelis.content)
+    #Get the url's of the cars
+    carpages = tree.xpath('//a[@class=""]/@href')
+
+    hirdetes_kodok = tree.xpath('//div[@class="talalatisor-info '
+                               'talalatisor-hirkod"]//text()')
+    carnames = tree.xpath('//div[@class="col-xs-28 col-sm-19 '
+                          'cim-kontener"]/h3/a/text()')
+    hirdetes_kodok =[w.replace('Hirdetéskód: ', '')for w in hirdetes_kodok]
+    hirdetes_kodok =[w.replace('(', '')for w in hirdetes_kodok]
+    hirdetes_kodok =[w.replace(')', '')for w in hirdetes_kodok]
+    hirdetes_kodok =[w.replace('', '')for w in hirdetes_kodok]
+
+    #Build a dictionary with the webpages and car ID's
+    cars_pages = dict(zip(hirdetes_kodok, carpages))
+    carpages_all.append(carpages)
+
 cars=[]
 car_ids = []
 car_attributions_all = []
+flat_list = [item for sublist in carpages_all for item in sublist]
 
 #Get all the information for a car as it can
-for page in carpages:
+for page in flat_list:
     car_id =[]
     car_attributions = []
     carpage = requests.get(page)
@@ -53,14 +73,9 @@ for page in carpages:
     car_attributions['Modell'] = modell[0]
     car_attributions_all.append(car_attributions)
     car_ids.append(car_id[0])
-    
+
 #Build a dictionary with the car ID's and all the infos
 cars = dict(zip(car_ids, car_attributions_all))
 
 # Print the cars and infos
-for cars_id, cars_attrb in cars.items():
-    print("Car ID: " + cars_id + "\nDescriptions:")
-    for cars_attrb_name, cars_attrb_value in cars_attrb.items():
-        print("\t-" + str(cars_attrb_name) + " : " + str(cars_attrb_value))
-
-
+print(cars)
