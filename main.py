@@ -1,9 +1,10 @@
 from lxml import html
 import requests
 import time
+import json
 
 modelpage = requests.get(
-    'https://www.hasznaltauto.hu/szemelyauto/abarth/')
+    'https://www.hasznaltauto.hu/szemelyauto/daihatsu/')
 tree = html.fromstring(modelpage.content)
 
 #get the next url list, where the url of the cars can be found
@@ -60,7 +61,12 @@ for page in flat_list:
     modellcsoport = tree.xpath('//a[@type="modellcsoport"]/text()')
     modell = tree.xpath('//a[@type="modell"]/text()')
     car_attributions = dict(zip(attributum_names,attributum_values))
-    car_attributions['Leírás'] = description[0]
+    try:
+        car_attributions['Leírás'] = description[0]
+    except IndexError:
+        car_attributions['Leírás'] = "Nincs"
+    else:
+        car_attributions['Leírás'] = description[0]
     car_attributions['Kategória'] = category[0]
     car_attributions['Márka'] = marka[0]
     #There are a lot of cars without parameter 'modellcsoport'
@@ -77,5 +83,8 @@ for page in flat_list:
 #Build a dictionary with the car ID's and all the infos
 cars = dict(zip(car_ids, car_attributions_all))
 
-# Print the cars and infos
-print(cars)
+#import data to json
+
+filename = 'daihatsu_20180602.json'
+with open(filename, 'w') as f_obj:
+    json.dump(cars,f_obj)
