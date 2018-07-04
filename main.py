@@ -3,19 +3,24 @@ import requests
 import time
 import json
 
-modelpage = requests.get(
-    'https://www.hasznaltauto.hu/szemelyauto/daihatsu/')
+link = 'https://www.hasznaltauto.hu/szemelyauto/barkas/'
+modelpage = requests.get(link)
+
 tree = html.fromstring(modelpage.content)
 
-#get the next url list, where the url of the cars can be found
-maxlist = tree.xpath('//li[@class="last"]/a/@href')
-string = maxlist[0]
-len = string.find('page')
-maxpage = string[(len)+4:]
-link = string[:len]
-pagelists = []
-for maxpage in range(1,int(maxpage)+1):
-    pagelists.append(str(link) + "page" + str(maxpage))
+#get the url lists, where the actual url of the cars can be found, if there is 1 page, append just that one
+try:
+    string = maxlist[0]
+except IndexError:
+    pagelists = [link]
+else:
+    string = maxlist[0]
+    len = string.find('page')
+    maxpage = string[(len)+4:]
+    link = string[:len]
+    pagelists = []
+    for maxpage in range(1,int(maxpage)+1):
+        pagelists.append(str(link) + "page" + str(maxpage))
 
 carpages_all =[]
 for pagelist in pagelists:
