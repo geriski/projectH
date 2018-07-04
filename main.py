@@ -2,6 +2,9 @@ from lxml import html
 import requests
 import time
 import json
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/barkas/'
 modelpage = requests.get(link)
@@ -87,6 +90,9 @@ for page in flat_list:
 
 #Build a dictionary with the car ID's and all the infos
 cars = dict(zip(car_ids, car_attributions_all))
+
+#import the cars to a Panda DataFramework object
+car = pd.DataFrame.from_dict(cars, orient='index')
 
 #import data to json
 
