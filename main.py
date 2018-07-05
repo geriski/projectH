@@ -85,6 +85,24 @@ for page in flat_list:
     else:
         car_attributions['Modellcsoport'] = modellcsoport[0]
     car_attributions['Modell'] = modell[0]
+    
+#formatting the attributions of the car, eg. cut the spaces and metrics
+    
+    for k, value in car_attributions.items():
+        if k == ('Leírás'):
+            continue
+        elif k == ('Okmányok jellege:'):
+            continue
+        else:
+            value=value.replace('\xa0','')
+            value=value.replace('Ft','')
+            value=value.replace('€','')
+            value=value.replace('km','')
+            value=value.replace(' ','')
+            value=value.replace('kg','')
+            value=value.replace('cm³','')
+        car_attributions.update({k: value})
+    
     car_attributions_all.append(car_attributions)
     car_ids.append(car_id[0])
 
