@@ -24,34 +24,41 @@ else:
     pagelists = []
     for maxpage in range(1,int(maxpage)+1):
         pagelists.append(str(link) + "page" + str(maxpage))
-
-carpages_all =[]
+        
+#Get the ID-s and URL's of the cars in a dictionary
+cars_pages_ids={}
 for pagelist in pagelists:
     pagelis = requests.get(pagelist)
     tree = html.fromstring(pagelis.content)
+    
     #Get the url's of the cars
     carpages = tree.xpath('//a[@class=""]/@href')
-
-    hirdetes_kodok = tree.xpath('//div[@class="talalatisor-info '
-                               'talalatisor-hirkod"]//text()')
-    carnames = tree.xpath('//div[@class="col-xs-28 col-sm-19 '
-                          'cim-kontener"]/h3/a/text()')
-    hirdetes_kodok =[w.replace('Hirdetéskód: ', '')for w in hirdetes_kodok]
-    hirdetes_kodok =[w.replace('(', '')for w in hirdetes_kodok]
-    hirdetes_kodok =[w.replace(')', '')for w in hirdetes_kodok]
-    hirdetes_kodok =[w.replace('', '')for w in hirdetes_kodok]
+    
+    #Remove dupplicates
+    hirdetes_kodok = set(carpages)
+    
+    cars_pages_id={}
+    
+    #Making the ID-s from the URL links
+    for hirdetes_kod in hirdetes_kodok:
+        leng = hirdetes_kod.rfind('-')
+        kod = hirdetes_kod[(leng)+1:]
+        if kod.isdigit():
+            cars_pages_id[kod] = hirdetes_kod
+        else:
+            cars_pages_id[kod] = 'error'
 
     #Build a dictionary with the webpages and car ID's
-    cars_pages = dict(zip(hirdetes_kodok, carpages))
-    carpages_all.append(carpages)
+
+    cars_pages_ids.update(cars_pages_id)
 
 cars=[]
 car_ids = []
 car_attributions_all = []
-flat_list = [item for sublist in carpages_all for item in sublist]
+car_url_list = cars_pages_ids.values()
 
 #Get all the information for a car as it can
-for page in flat_list:
+for page in car_url_list:
     car_id =[]
     car_attributions = []
     carpage = requests.get(page)
