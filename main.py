@@ -10,7 +10,7 @@ link = 'https://www.hasznaltauto.hu/szemelyauto/barkas/'
 modelpage = requests.get(link)
 
 tree = html.fromstring(modelpage.content)
-
+maxlist = tree.xpath('//li[@class="last"]/a/@href')
 #get the url lists, where the actual url of the cars can be found, if there is 1 page, append just that one
 try:
     string = maxlist[0]
