@@ -115,7 +115,10 @@ for page in car_url_list:
             car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
         else:
             car_attributions['Évjárat év'] = car_attributions['Évjárat:']    
-    
+    #Why Keyerror below??? -- Investigate!
+    #if car_attributions['Sebességváltó fajtája:'] != None:
+    #    car_attributions['Sebességváltó típus'] = car_attributions['Sebességváltó fajtája:'][:car_attributions['Sebességváltó fajtája:'].find('(')]
+    #   car_attributions['Sebességváltó fokozat'] = car_attributions['Sebességváltó fajtája:'][car_attributions['Sebességváltó fajtája:'].find('(')+1:car_attributions['Sebességváltó fajtája:'].find(')')]
     #There are a lot of cars without parameter 'modellcsoport'
     try:
         car_attributions['Modellcsoport'] = modellcsoport[0]
