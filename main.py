@@ -1,6 +1,7 @@
 from lxml import html
 import requests
 import time
+from datetime import datetime, timedelta
 import json
 import pandas as pd
 import numpy as np
@@ -98,6 +99,9 @@ for page in car_url_list:
         car_attributions['Leírás'] = description[0]
     car_attributions['Kategória'] = category[0]
     car_attributions['Márka'] = marka[0]
+    car_attributions['Hirdetés feladása'] = (datetime.strftime(datetime.now(), '%Y-%m-%d'))
+    car_attributions['Hirdetés leszedése'] = None
+    
     #There are a lot of cars without parameter 'modellcsoport'
     try:
         car_attributions['Modellcsoport'] = modellcsoport[0]
@@ -114,6 +118,8 @@ for page in car_url_list:
             continue
         elif k == ('Okmányok jellege:'):
             continue
+        elif k == ('Hirdetés leszedése'):
+            continue
         else:
             value=value.replace('\xa0','')
             value=value.replace('Ft','')
@@ -129,6 +135,12 @@ for page in car_url_list:
 
 #Build a dictionary with the car ID's and all the infos
 new_cars = dict(zip(car_ids, car_attributions_all))
+
+#update the advertisement end date of removed cars 
+
+for cars_existing_key, cars_existing_values in cars_existing.items():
+    if cars_existing_key not in cars_pages_ids.keys():
+        cars_existing_values['Hirdetés leszedése'] = (datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d'))
 
 #Add the new cars to the original database
 cars_existing.update(new_cars)
