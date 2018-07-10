@@ -51,11 +51,25 @@ for pagelist in pagelists:
     #Build a dictionary with the webpages and car ID's
 
     cars_pages_ids.update(cars_pages_id)
+    
+# search for the new cars
 
+#load the database
+filename = 'database.json'
+with open(filename) as f_obj:
+    cars_existing = json.load(f_obj)
+    cars_existing = cars_existing.keys()
+
+download_cars = {}  
+for cars_pages_id_check, cars_urls in cars_pages_ids.items():
+    if cars_pages_id_check in cars_existing:
+        continue
+    else:
+        download_cars[cars_pages_id_check] = cars_urls
 cars=[]
 car_ids = []
 car_attributions_all = []
-car_url_list = cars_pages_ids.values()
+car_url_list = download_cars.values()
 
 #Get all the information for a car as it can
 for page in car_url_list:
@@ -121,6 +135,6 @@ car = pd.DataFrame.from_dict(cars, orient='index')
 
 #import data to json
 
-filename = 'daihatsu_20180602.json'
+filename = 'database'
 with open(filename, 'w') as f_obj:
     json.dump(cars,f_obj)
