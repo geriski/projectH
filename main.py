@@ -59,11 +59,10 @@ for pagelist in pagelists:
 filename = 'database.json'
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
-    cars_existing = cars_existing.keys()
 
 download_cars = {}  
 for cars_pages_id_check, cars_urls in cars_pages_ids.items():
-    if cars_pages_id_check in cars_existing:
+    if cars_pages_id_check in cars_existing.keys():
         continue
     else:
         download_cars[cars_pages_id_check] = cars_urls
@@ -112,11 +111,14 @@ for page in car_url_list:
     car_attributions['Modell'] = modell[0]
     
 #formatting the attributions of the car, eg. cut the spaces and metrics
+    #Get rid of ':' in keys
+    car_attributions = { k.replace(':', ''): v for k, v in car_attributions.items() }
     
+    #Format values
     for k, value in car_attributions.items():
         if k == ('Leírás'):
             continue
-        elif k == ('Okmányok jellege:'):
+        elif k == ('Okmányok jellege'):
             continue
         elif k == ('Hirdetés leszedése'):
             continue
