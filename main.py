@@ -66,7 +66,7 @@ for cars_pages_id_check, cars_urls in cars_pages_ids.items():
         continue
     else:
         download_cars[cars_pages_id_check] = cars_urls
-cars=[]
+new_cars=[]
 car_ids = []
 car_attributions_all = []
 car_url_list = download_cars.values()
@@ -128,7 +128,10 @@ for page in car_url_list:
     car_ids.append(car_id[0])
 
 #Build a dictionary with the car ID's and all the infos
-cars = dict(zip(car_ids, car_attributions_all))
+new_cars = dict(zip(car_ids, car_attributions_all))
+
+#Add the new cars to the original database
+cars_existing.update(new_cars)
 
 #import the cars to a Panda DataFramework object
 car = pd.DataFrame.from_dict(cars, orient='index')
@@ -137,4 +140,4 @@ car = pd.DataFrame.from_dict(cars, orient='index')
 
 filename = 'database'
 with open(filename, 'w') as f_obj:
-    json.dump(cars,f_obj)
+    json.dump(cars_existing,f_obj)
