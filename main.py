@@ -100,6 +100,21 @@ for page in car_url_list:
     car_attributions['Márka'] = marka[0]
     car_attributions['Hirdetés feladása'] = (datetime.strftime(datetime.now(), '%Y-%m-%d'))
     car_attributions['Hirdetés leszedése'] = None
+    car_attributions['Évjárat év'] = None
+    car_attributions['Évjárat hónap'] = None
+    
+    #Formatting 'Évjárat' to creating year, and months
+    if car_attributions['Évjárat:'] != None:
+        if car_attributions['Évjárat:'].find('(') != -1:
+            ev_honap = car_attributions['Évjárat:'][:(car_attributions['Évjárat:'].find('('))]
+            car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
+            car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
+        elif car_attributions['Évjárat:'].find('/') != -1:
+            ev_honap = car_attributions['Évjárat:']
+            car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
+            car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
+        else:
+            car_attributions['Évjárat év'] = car_attributions['Évjárat:']    
     
     #There are a lot of cars without parameter 'modellcsoport'
     try:
@@ -116,21 +131,25 @@ for page in car_url_list:
     
     #Format values
     for k, value in car_attributions.items():
-        if k == ('Leírás'):
-            continue
-        elif k == ('Okmányok jellege'):
-            continue
-        elif k == ('Hirdetés leszedése'):
+        #In case of the replace function doesn't work, don't do anything
+        try:
+            value=value.replace('\xa0','')
+        except AttributeError:
             continue
         else:
-            value=value.replace('\xa0','')
-            value=value.replace('Ft','')
-            value=value.replace('€','')
-            value=value.replace('km','')
-            value=value.replace(' ','')
-            value=value.replace('kg','')
-            value=value.replace('cm³','')
-        car_attributions.update({k: value})
+            if k == ('Leírás'):
+                continue
+            elif k == ('Okmányok jellege'):
+                continue
+            else:
+                value=value.replace('\xa0','')
+                value=value.replace('Ft','')
+                value=value.replace('€','')
+                value=value.replace('km','')
+                value=value.replace(' ','')
+                value=value.replace('kg','')
+                value=value.replace('cm³','')
+            car_attributions.update({k: value})
     
     car_attributions_all.append(car_attributions)
     car_ids.append(car_id[0])
