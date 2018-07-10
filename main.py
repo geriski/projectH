@@ -146,7 +146,7 @@ for cars_existing_key, cars_existing_values in cars_existing.items():
 cars_existing.update(new_cars)
 
 #import the cars to a Panda DataFramework object
-car = pd.DataFrame.from_dict(cars, orient='index')
+car = pd.DataFrame.from_dict(cars_existing, orient='index')
 
 #import data to json
 
