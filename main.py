@@ -89,6 +89,18 @@ for page in car_url_list:
     marka = tree.xpath('//a[@type="marka"]/text()')
     modellcsoport = tree.xpath('//a[@type="modellcsoport"]/text()')
     modell = tree.xpath('//a[@type="modell"]/text()')
+    try: 
+        attributum_names.remove('Extrákkal növelt ár:')
+    except ValueError:
+        sale_price = 0
+    else:
+        sale_price = 1
+        attributum_names.remove('Akciós ár:')
+        attributum_names.remove('Akció feltételei:')
+        attributum_names.insert(0,'Vételár:')
+        attributum_values.insert(0,min(tree.xpath('//span[@class="arsorpiros"]/text()')))
+    
+    
     car_attributions = dict(zip(attributum_names,attributum_values))
     try:
         car_attributions['Leírás'] = description[0]
