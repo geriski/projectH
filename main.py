@@ -96,6 +96,7 @@ for page in car_url_list:
         car_attributions['Leírás'] = "Nincs"
     else:
         car_attributions['Leírás'] = description[0]
+    car_attributions['Felszereltség'] = tree.xpath('//ul[@class="pontos"]/li/text()')
     car_attributions['Kategória'] = category[0]
     car_attributions['Márka'] = marka[0]
     car_attributions['Hirdetés feladása'] = (datetime.strftime(datetime.now(), '%Y-%m-%d'))
@@ -147,6 +148,8 @@ for page in car_url_list:
             if k == ('Leírás'):
                 continue
             elif k == ('Okmányok jellege'):
+                continue
+            elif k == ('Felszereltség'):
                 continue
             else:
                 value=value.replace('\xa0','')
