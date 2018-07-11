@@ -97,6 +97,9 @@ for page in car_url_list:
     else:
         car_attributions['Leírás'] = description[0]
     car_attributions['Felszereltség'] = tree.xpath('//ul[@class="pontos"]/li/text()')
+    car_attributions['Cím'] = tree.xpath('//div[@class="hagomb-belso"]/text()')[0]
+    helyseg = tree.xpath('//meta[@name="description"]/@content')[0]
+    car_attributions['Helység'] = helyseg[helyseg.rfind(':')+2:helyseg.find(')')]
     car_attributions['Kategória'] = category[0]
     car_attributions['Márka'] = marka[0]
     car_attributions['Hirdetés feladása'] = (datetime.strftime(datetime.now(), '%Y-%m-%d'))
