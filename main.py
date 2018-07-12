@@ -99,7 +99,10 @@ for page in car_url_list:
         attributum_names.remove('Akció feltételei:')
         attributum_names.insert(0,'Vételár:')
         attributum_values.insert(0,min(tree.xpath('//span[@class="arsorpiros"]/text()')))
-    
+        try: 
+            attributum_names.remove('Alaptípus ára:')
+        except ValueError:
+            sale_price = 1
     
     car_attributions = dict(zip(attributum_names,attributum_values))
     try:
