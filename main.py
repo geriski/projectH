@@ -175,6 +175,8 @@ for page in car_url_list:
                 continue
             elif k ==('Cím'):
                 continue
+            elif k ==('Tető'):
+                continue
             else:
                 value=value.replace('\xa0','')
                 value=value.replace('Ft','')
@@ -201,8 +203,30 @@ for cars_existing_key, cars_existing_values in cars_existing.items():
 cars_existing.update(new_cars)
 
 #import the cars to a Panda DataFramework object
-car = pd.DataFrame.from_dict(cars_existing, orient='index')
+cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
+#setting the proper type of dtypes
+
+cardata['Hirdetés feladása'] = cardata['Hirdetés feladása'].astype('datetime64')
+cardata['Hirdetés leszedése'] = cardata['Hirdetés leszedése'].astype('datetime64')
+cardata['Kivitel'] = cardata['Kivitel'].astype('category')
+cardata['Henger-elrendezés'] = cardata['Henger-elrendezés'].astype('category')
+cardata['Kategória'] = cardata['Kategória'].astype('category')
+cardata['Klíma fajtája'] = cardata['Klíma fajtája'].astype('category')
+cardata['Kárpit színe (1)'] = cardata['Kárpit színe (1)'].astype('category')
+cardata['Kárpit színe (2)'] = cardata['Kárpit színe (2)'].astype('category')
+cardata['Modell'] = cardata['Modell'].astype('category')
+cardata['Modellcsoport'] = cardata['Modellcsoport'].astype('category')
+cardata['Márka'] = cardata['Márka'].astype('category')
+cardata['Okmányok jellege'] = cardata['Okmányok jellege'].astype('category')
+cardata['Sebességváltó típus'] = cardata['Sebességváltó típus'].astype('category')
+cardata['Szín'] = cardata['Szín'].astype('category')
+cardata['Tető'] = cardata['Tető'].astype('category')
+cardata['Állapot'] = cardata['Állapot'].astype('category')
+cardata['Üzemanyag'] = cardata['Üzemanyag'].astype('category')
+
+#additional variables in Pandas
+cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
 #export data to json
 
 filename = 'database'
