@@ -228,6 +228,8 @@ cardata['Üzemanyag'] = cardata['Üzemanyag'].astype('category')
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
 #export data to json
+
+#attila's branch próba
 #próba
 #próba2
 #próba3_main
