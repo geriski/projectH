@@ -228,7 +228,7 @@ cardata['Üzemanyag'] = cardata['Üzemanyag'].astype('category')
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
 #export data to json
-
+#próba
 print(cardata.dtypes)
 filename = 'database2.json'
 with open(filename, 'w') as f_obj:
