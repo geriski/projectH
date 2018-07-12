@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-link = 'https://www.hasznaltauto.hu/szemelyauto/barkas/'
+link = 'https://www.hasznaltauto.hu/szemelyauto/maserati/levante/'
 modelpage = requests.get(link)
 
 tree = html.fromstring(modelpage.content)
@@ -56,7 +56,7 @@ for pagelist in pagelists:
 # search for the new cars
 
 #load the database
-filename = 'database.json'
+filename = 'database2.json'
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
@@ -229,6 +229,7 @@ cardata['Üzemanyag'] = cardata['Üzemanyag'].astype('category')
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
 #export data to json
 
-filename = 'database'
+print(cardata.dtypes)
+filename = 'database2.json'
 with open(filename, 'w') as f_obj:
     json.dump(cars_existing,f_obj)
