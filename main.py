@@ -230,9 +230,7 @@ cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hird
 #export data to json
 
 #attila's branch próba
-#próba
-#próba2
-#próba3_main
+#sok
 print(cardata.dtypes)
 filename = 'database2.json'
 with open(filename, 'w') as f_obj:
