@@ -231,6 +231,7 @@ cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hird
 
 #attila's branch próba
 #sok
+#geribranch
 print(cardata.dtypes)
 filename = 'database2.json'
 with open(filename, 'w') as f_obj:
