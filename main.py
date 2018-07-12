@@ -110,14 +110,18 @@ for page in car_url_list:
         car_attributions['Leírás'] = description[0]
     car_attributions['Felszereltség'] = tree.xpath('//ul[@class="pontos"]/li/text()')
     car_attributions['Cím'] = tree.xpath('//div[@class="hagomb-belso"]/text()')[0]
-    helyseg = tree.xpath('//meta[@name="description"]/@content')[0]
-    car_attributions['Helység'] = helyseg[helyseg.rfind(':')+2:helyseg.find(')')]
+    helyiseg = tree.xpath('//meta[@name="description"]/@content')[0]
+    car_attributions['Helyiség'] = helyiseg[helyiseg.rfind(':')+2:helyiseg.find(')')]
     car_attributions['Kategória'] = category[0]
     car_attributions['Márka'] = marka[0]
     car_attributions['Hirdetés feladása'] = (datetime.strftime(datetime.now(), '%Y-%m-%d'))
     car_attributions['Hirdetés leszedése'] = None
     car_attributions['Évjárat év'] = None
     car_attributions['Évjárat hónap'] = None
+    try:
+        car_attributions['Teljesítmény(LE)'] = car_attributions['Teljesítmény:'][car_attributions['Teljesítmény:'].find(',')+2:car_attributions['Teljesítmény:'].find('LE')-1]
+    except KeyError:
+        c=0
     
     #Formatting 'Évjárat' to creating year, and months
     if car_attributions['Évjárat:'] != None:
@@ -135,7 +139,7 @@ for page in car_url_list:
     try:
         car_attributions['Sebességváltó fajtája:'] != None
     except KeyError:
-        continue
+        c=0
     else:
         if car_attributions['Sebességváltó fajtája:'] != None:
             car_attributions['Sebességváltó típus'] = car_attributions['Sebességváltó fajtája:'][:car_attributions['Sebességváltó fajtája:'].find('(')]
