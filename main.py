@@ -170,6 +170,8 @@ for page in car_url_list:
                 continue
             elif k == ('Felszereltség'):
                 continue
+            elif k ==('Cím'):
+                continue
             else:
                 value=value.replace('\xa0','')
                 value=value.replace('Ft','')
@@ -198,7 +200,7 @@ cars_existing.update(new_cars)
 #import the cars to a Panda DataFramework object
 car = pd.DataFrame.from_dict(cars_existing, orient='index')
 
-#import data to json
+#export data to json
 
 filename = 'database'
 with open(filename, 'w') as f_obj:
