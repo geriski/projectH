@@ -220,6 +220,11 @@ dates1 = ['Évjárat','Műszaki vizsga érvényes']
 for date1 in dates1:
     cardata[date1]= pd.to_datetime(cardata[date1])
 
+#ensure that were numerical data is a must, there would be only num data
+
+numdatas = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg','Sebességváltó fokozat', 'Teljes tömeg', 'Teljesítmény(LE)', 'Vételár', 'Vételár EUR']
+for numdata in numdatas:
+    cardata[numdata] =pd.to_numeric(cardata[numdata], errors='coerce')
 
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
