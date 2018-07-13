@@ -207,23 +207,13 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
 #setting the proper type of dtypes
 
-cardata['Hirdetés feladása'] = cardata['Hirdetés feladása'].astype('datetime64')
-cardata['Hirdetés leszedése'] = cardata['Hirdetés leszedése'].astype('datetime64')
-cardata['Kivitel'] = cardata['Kivitel'].astype('category')
-cardata['Henger-elrendezés'] = cardata['Henger-elrendezés'].astype('category')
-cardata['Kategória'] = cardata['Kategória'].astype('category')
-cardata['Klíma fajtája'] = cardata['Klíma fajtája'].astype('category')
-cardata['Kárpit színe (1)'] = cardata['Kárpit színe (1)'].astype('category')
-cardata['Kárpit színe (2)'] = cardata['Kárpit színe (2)'].astype('category')
-cardata['Modell'] = cardata['Modell'].astype('category')
-cardata['Modellcsoport'] = cardata['Modellcsoport'].astype('category')
-cardata['Márka'] = cardata['Márka'].astype('category')
-cardata['Okmányok jellege'] = cardata['Okmányok jellege'].astype('category')
-cardata['Sebességváltó típus'] = cardata['Sebességváltó típus'].astype('category')
-cardata['Szín'] = cardata['Szín'].astype('category')
-cardata['Tető'] = cardata['Tető'].astype('category')
-cardata['Állapot'] = cardata['Állapot'].astype('category')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].astype('category')
+datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
+categories = ['Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
+
+for datetime in datetimes:
+  cardata[datetime] = cardata[datetime].astype('datetime64')
+for category1 in categories:
+  cardata[category1] = cardata[category1].astype('category')
 
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
