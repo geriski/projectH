@@ -210,7 +210,7 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 #setting the proper type of dtypes
 
 datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
-categories = ['Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
+categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
 
 for datetime in datetimes:
   cardata[datetime] = cardata[datetime].astype('datetime64')
