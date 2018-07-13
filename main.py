@@ -91,11 +91,11 @@ for page in car_url_list:
     modell = tree.xpath('//a[@type="modell"]/text()')
     try: 
         attributum_names.remove('Extrákkal növelt ár:')
+        attributum_names.remove('Akciós ár:')
     except ValueError:
         sale_price = 0
     else:
         sale_price = 1
-        attributum_names.remove('Akciós ár:')
         attributum_names.remove('Akció feltételei:')
         attributum_names.insert(0,'Vételár:')
         attributum_values.insert(0,min(tree.xpath('//span[@class="arsorpiros"]/text()')))
@@ -232,8 +232,11 @@ for numdata in numdatas:
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
 cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
 cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
-#export data to json
 
+#import database to Pandas
+#cardata = pd.read_json(path_or_buf= 'database.json', orient='index')
+
+#export data to json
 filename = 'database2.json'
 with open(filename, 'w') as f_obj:
     json.dump(cars_existing,f_obj)
