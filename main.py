@@ -125,19 +125,19 @@ for page in car_url_list:
         car_attributions['Teljesítmény(LE)'] = car_attributions['Teljesítmény:'][car_attributions['Teljesítmény:'].find(',')+2:car_attributions['Teljesítmény:'].find('LE')-1]
     except KeyError:
         c=0
-    
+  #no need  
     #Formatting 'Évjárat' to creating year, and months
-    if car_attributions['Évjárat:'] != None:
-        if car_attributions['Évjárat:'].find('(') != -1:
-            ev_honap = car_attributions['Évjárat:'][:(car_attributions['Évjárat:'].find('('))]
-            car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
-            car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
-        elif car_attributions['Évjárat:'].find('/') != -1:
-            ev_honap = car_attributions['Évjárat:']
-            car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
-            car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
-        else:
-            car_attributions['Évjárat év'] = car_attributions['Évjárat:']    
+  #  if car_attributions['Évjárat:'] != None:
+  #      if car_attributions['Évjárat:'].find('(') != -1:
+  #          ev_honap = car_attributions['Évjárat:'][:(car_attributions['Évjárat:'].find('('))]
+  #          car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
+  #          car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
+  #      elif car_attributions['Évjárat:'].find('/') != -1:
+  #          ev_honap = car_attributions['Évjárat:']
+  #          car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
+  #         car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
+  #      else:
+  #          car_attributions['Évjárat év'] = car_attributions['Évjárat:']    
     
     try:
         car_attributions['Sebességváltó fajtája:'] != None
@@ -214,6 +214,12 @@ for datetime in datetimes:
   cardata[datetime] = cardata[datetime].astype('datetime64')
 for category1 in categories:
   cardata[category1] = cardata[category1].astype('category')
+
+#convert dates to date types
+dates1 = ['Évjárat','Műszaki vizsga érvényes']
+for date1 in dates1:
+    cardata[date1]= pd.to_datetime(cardata[date1])
+
 
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
