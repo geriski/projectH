@@ -230,12 +230,10 @@ for numdata in numdatas:
 
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
+cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
+cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
 #export data to json
 
-#attila's branch próba
-#sok
-#geribranch
-print(cardata.dtypes)
 filename = 'database2.json'
 with open(filename, 'w') as f_obj:
     json.dump(cars_existing,f_obj)
