@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 import json
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
-link = 'https://www.hasznaltauto.hu/szemelyauto/maserati/levante/'
+link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/duster/'
 modelpage = requests.get(link)
 
 tree = html.fromstring(modelpage.content)
@@ -70,6 +70,7 @@ new_cars=[]
 car_ids = []
 car_attributions_all = []
 car_url_list = download_cars.values()
+
 
 #Get all the information for a car as it can
 for page in car_url_list:
@@ -195,11 +196,11 @@ for page in car_url_list:
 #Build a dictionary with the car ID's and all the infos
 new_cars = dict(zip(car_ids, car_attributions_all))
 
-#update the advertisement end date of removed cars 
+#update the advertisement end date of removed cars TEMP.DISABLED
 
-for cars_existing_key, cars_existing_values in cars_existing.items():
-    if cars_existing_key not in cars_pages_ids.keys():
-        cars_existing_values['Hirdetés leszedése'] = (datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d'))
+#for cars_existing_key, cars_existing_values in cars_existing.items():
+#    if cars_existing_key not in cars_pages_ids.keys():
+#        cars_existing_values['Hirdetés leszedése'] = (datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d'))
 
 #Add the new cars to the original database
 cars_existing.update(new_cars)
@@ -212,8 +213,8 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
 categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
 
-for datetime in datetimes:
-  cardata[datetime] = cardata[datetime].astype('datetime64')
+for datetime1 in datetimes:
+  cardata[datetime1] = cardata[datetime1].astype('datetime64')
 for category1 in categories:
   cardata[category1] = cardata[category1].astype('category')
 
