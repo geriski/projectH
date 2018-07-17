@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 #import matplotlib.pyplot as plt
 
-link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/duster/'
+link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/duster'
 modelpage = requests.get(link)
 
 tree = html.fromstring(modelpage.content)
@@ -92,18 +92,29 @@ for page in car_url_list:
     modell = tree.xpath('//a[@type="modell"]/text()')
     try: 
         attributum_names.remove('Extrákkal növelt ár:')
-        attributum_names.remove('Akciós ár:')
+        
     except ValueError:
         sale_price = 0
     else:
         sale_price = 1
-        attributum_names.remove('Akció feltételei:')
-        attributum_names.insert(0,'Vételár:')
-        attributum_values.insert(0,min(tree.xpath('//span[@class="arsorpiros"]/text()')))
-        try: 
-            attributum_names.remove('Alaptípus ára:')
+        try:
+            attributum_names.remove('Akció feltételei:')
+            attributum_values.insert(0,min(tree.xpath('//span[@class="arsorpiros"]/text()')))
         except ValueError:
             sale_price = 1
+                
+    if sale_price ==1:
+        try:
+            attributum_names.remove('Akciós ár:')
+        except ValueError:
+            blabla=1
+            
+    try: 
+        attributum_names.remove('Alaptípus ára:')
+    except ValueError:
+        sale_price = 0
+    if sale_price == 1:    
+        attributum_names.insert(0,'Vételár:')
     
     car_attributions = dict(zip(attributum_names,attributum_values))
     try:
@@ -221,7 +232,7 @@ for category1 in categories:
 #convert dates to date types
 dates1 = ['Évjárat','Műszaki vizsga érvényes']
 for date1 in dates1:
-    cardata[date1]= pd.to_datetime(cardata[date1])
+    cardata[date1]= pd.to_datetime(cardata[date1], errors='coerce')
 
 #ensure that were numerical data is a must, there would be only num data
 
@@ -235,7 +246,7 @@ cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
 cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
 
 #import database to Pandas
-#cardata = pd.read_json(path_or_buf= 'database.json', orient='index')
+#cardata = pd.read_json(path_or_buf= 'database2.json', orient='index')
 
 #export data to json
 filename = 'database2.json'
