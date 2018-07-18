@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 #import matplotlib.pyplot as plt
 
-link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/duster'
+link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 modelpage = requests.get(link)
 
 tree = html.fromstring(modelpage.content)
@@ -198,6 +198,7 @@ for page in car_url_list:
                 value=value.replace('kg','')
                 value=value.replace('cm³','')
                 value=value.replace('f\u0151','')
+                value=value.replace('liter','')
                 
             car_attributions.update({k: value})
     
