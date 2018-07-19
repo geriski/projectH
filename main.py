@@ -261,12 +261,11 @@ with open(filename, 'w') as f_obj:
 
 #running OLS multilinear regression analysis
 #clear the datas
-cardata = cardata.dropna(subset=['Évjárat'])
+
 cardata = cardata.dropna(subset=['Vételár'])
 cardata = cardata.dropna(subset=['Autó kora(nap)'])
 cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
 cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
-cardata = cardata.drop(cardata[cardata['Állapot'] == 'Sérült'].index)
 cardata['Telj'] = cardata['Teljesítmény(LE)']
 cardata['km'] = cardata['Kilométeróra állása']
 cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(int))*-1
@@ -277,6 +276,7 @@ cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(i
 #returned pandas DataFrames instead of simple numpy arrays. This is useful because DataFrames allow statsmodels to carry-over meta-data (e.g. variable names) when reporting results.
 from patsy import dmatrices
 y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=cardata, return_type='dataframe')
+
 #Model fit and summary
 model = sm.OLS(y,X).fit()
 print(model.summary())
@@ -285,4 +285,12 @@ print(model.summary())
 fig = plt.figure(figsize=(15,8))
 fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
 plt.show()
-   
+
+#values must have add to the predition
+print(X.columns)
+#Predict new value
+Xnew = np.asarray((1,0,0,0,0,0,0,0,1,0,0,0,0,104500,2600))
+ynewpred= model.predict(Xnew)
+#predected value
+print(ynewpred)
+
