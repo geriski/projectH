@@ -246,6 +246,11 @@ cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hird
 cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
 cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
 
+#showing a spec row
+#print(cardata.ix[12963080])
+#remove the rows, where in a spec columns has NaN
+#cardata = cardata.dropna(subset=['Kilométeróra állása'])
+
 #import database to Pandas
 #cardata = pd.read_json(path_or_buf= 'database2.json', orient='index')
 
@@ -253,3 +258,31 @@ cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - 
 filename = 'database2.json'
 with open(filename, 'w') as f_obj:
     json.dump(cars_existing,f_obj)
+
+#running OLS multilinear regression analysis
+#clear the datas
+cardata = cardata.dropna(subset=['Évjárat'])
+cardata = cardata.dropna(subset=['Vételár'])
+cardata = cardata.dropna(subset=['Autó kora(nap)'])
+cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
+cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
+cardata = cardata.drop(cardata[cardata['Állapot'] == 'Sérült'].index)
+cardata['Telj'] = cardata['Teljesítmény(LE)']
+cardata['km'] = cardata['Kilométeróra állása']
+cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(int))*-1
+
+#Design matrices
+#Notice that dmatrices has split: the categorical variable into a set of indicator variables.
+#added a constant to the exogenous regressors matrix.
+#returned pandas DataFrames instead of simple numpy arrays. This is useful because DataFrames allow statsmodels to carry-over meta-data (e.g. variable names) when reporting results.
+from patsy import dmatrices
+y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=cardata, return_type='dataframe')
+#Model fit and summary
+model = sm.OLS(y,X).fit()
+print(model.summary())
+#print figures
+print(model.summary())
+fig = plt.figure(figsize=(15,8))
+fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
+plt.show()
+   
