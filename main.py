@@ -220,6 +220,17 @@ cars_existing.update(new_cars)
 #import the cars to a Panda DataFramework object
 cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
+#Formatting Állapot and Üzemenyag categories to 2 categories each / Állapot: Normal or Sérült, Üzemanyag: Benzin or Diesel or Alt.
+cardata['Állapot'] = cardata['Állapot'].str.replace('Sérülésmentes', 'Normál')
+cardata['Állapot'] = cardata['Állapot'].str.replace('Megkímélt', 'Normál')
+cardata['Állapot'] = cardata['Állapot'].str.replace('Kitűnő', 'Normál')
+cardata['Állapot'] = cardata['Állapot'].str.replace('Újszerű', 'Normál')
+cardata['Állapot'] = cardata['Állapot'].str.replace('Enyhénsérült', 'Sérült')
+cardata['Állapot'] = cardata['Állapot'].str.replace('Motorhibás', 'Sérült')
+cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('Benzin/Gáz', 'Alternatív')
+cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('Etanol', 'Alternatív')
+cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('LPG', 'Alternatív')
+
 #setting the proper type of dtypes
 
 datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
@@ -245,6 +256,7 @@ for numdata in numdatas:
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
 cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
 cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
+cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
 
 #showing a spec row
 #print(cardata.ix[12963080])
@@ -262,10 +274,13 @@ with open(filename, 'w') as f_obj:
 #running OLS multilinear regression analysis
 #clear the datas
 
+cardata = cardata.dropna(subset=['Évjárat'])
 cardata = cardata.dropna(subset=['Vételár'])
 cardata = cardata.dropna(subset=['Autó kora(nap)'])
-cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
-cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
+#cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
+#cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
+cardata = cardata.drop(cardata[cardata['Üzemanyag'] == 'Alternatív'].index)
+
 cardata['Telj'] = cardata['Teljesítmény(LE)']
 cardata['km'] = cardata['Kilométeróra állása']
 cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(int))*-1
@@ -289,7 +304,7 @@ plt.show()
 #values must have add to the predition
 print(X.columns)
 #Predict new value
-Xnew = np.asarray((1,0,0,0,0,0,0,0,1,0,0,0,0,104500,2600))
+Xnew = np.asarray((1,0,0,1,0,104500,2600))
 ynewpred= model.predict(Xnew)
 #predected value
 print(ynewpred)
