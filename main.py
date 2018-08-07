@@ -5,8 +5,8 @@ from io import StringIO, BytesIO
 import json
 link1= 'http://www.kozbeszerzes.hu/adatbazis/megtekint/hirdetmeny/portal_'
 pagelists=[]
-for num in range(1,10):
-    pagelists.append(str(link1) + str(num+10940) + '_2018/')
+for num in range(1,20):
+    pagelists.append(str(link1) + str(num+10950) + '_2018/')
 print(pagelists)
 notice = {}
 for link in pagelists:
@@ -96,6 +96,8 @@ for link in pagelists:
                 length_name_end = notice_page.find('III. szakasz:')
                 if length_name_end ==-1 :
                     length_name_end = notice_page.find('IV. szakasz')
+                if length_name_end ==-1 :
+                    length_name_end = notice_page.find('VI. szakasz') 
     
             sub_tree_string = notice_page[length_name_start:length_name_start+length_name_end]
             parser = etree.HTMLParser()
