@@ -6,7 +6,7 @@ import json
 link1= 'http://www.kozbeszerzes.hu/adatbazis/megtekint/hirdetmeny/portal_'
 pagelists=[]
 for num in range(1,20):
-    pagelists.append(str(link1) + str(num+10950) + '_2018/')
+    pagelists.append(str(link1) + str(num+1950) + '_2018/')
 print(pagelists)
 notice = {}
 for link in pagelists:
@@ -46,13 +46,18 @@ for link in pagelists:
                 length_name_end = notice_page[length_name_find+7:].find('target="')
                 tree_name_string = notice_page[length_name_find+length_name_start+6:length_name_find+length_name_end+5]
                 notice_attributes[notice_table_name] =  tree_name_string
-        
+        if notice_attributes['Beszerzés tárgya:'] == 'Szolgáltatásmegrendelés' :
+            continue
         #Ajánlatkérő
         notice_attributes['Ajánlakérő:'] ={}
         contracting_authority={}
         length_name_start= notice_page.find('I.1) Név és címek')
         length_name_end = notice_page.find('I.2) Közös közbeszerzés')
+        if length_name_end ==-1 :
+            length_name_end = notice_page.find('II. szakasz')
         sub_tree_string = notice_page[length_name_start:length_name_end]
+        
+        print(length_name_start, length_name_end)
         
         parser = etree.HTMLParser()
         sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
@@ -87,7 +92,7 @@ for link in pagelists:
             for sc in subject_categories:
                 if dele in sc:
                     subject_categories.remove(sc)
-        print(subject_categories)        
+        #print(subject_categories)        
         for subject_category in subject_categories:
             length_name_start= notice_page.find(subject_category)
             try:
@@ -104,7 +109,7 @@ for link in pagelists:
             sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
             subject_items = sub_tree.xpath('//span[@style="font-weight:200;color: #336699;"]/text()')
             subject[subject_category]=subject_items
-            print(subject_category)
+            #print(subject_category)
         
         notice_attributes_all['Tárgy']= subject
         #eredmény
