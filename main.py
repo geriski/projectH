@@ -5,7 +5,7 @@ from io import StringIO, BytesIO
 import json
 link1= 'http://www.kozbeszerzes.hu/adatbazis/megtekint/hirdetmeny/portal_'
 pagelists=[]
-for num in range(1,4):
+for num in range(1,10):
     pagelists.append(str(link1) + str(num+10940) + '_2018/')
 print(pagelists)
 notice = {}
@@ -116,8 +116,12 @@ for link in pagelists:
           parser = etree.HTMLParser()
           sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
           result_items = sub_tree.xpath('//span[@style="font-weight:200;color: #336699;"]/text()')
-          result_date = result_items[0]
-          notice_attributes_all['Eredmény']['Szerződés megkötés dátuma']= result_date
+          try:
+            result_date = result_items[0]
+          except IndexError:
+            notice_attributes_all['Eredmény']['Szerződés megkötés dátuma'] = None
+          else:
+            notice_attributes_all['Eredmény']['Szerződés megkötés dátuma']= result_date
         
           #nyertes
           result_contractor_attrib = {}
