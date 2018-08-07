@@ -6,7 +6,7 @@ import json
 link1= 'http://www.kozbeszerzes.hu/adatbazis/megtekint/hirdetmeny/portal_'
 pagelists=[]
 for num in range(1,20):
-    pagelists.append(str(link1) + str(num+1950) + '_2018/')
+    pagelists.append(str(link1) + str(num+5950) + '_2018/')
 print(pagelists)
 notice = {}
 for link in pagelists:
@@ -57,7 +57,7 @@ for link in pagelists:
             length_name_end = notice_page.find('II. szakasz')
         sub_tree_string = notice_page[length_name_start:length_name_end]
         
-        print(length_name_start, length_name_end)
+        print('Ajánlatkérő,60:', length_name_start, length_name_end)
         
         parser = etree.HTMLParser()
         sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
@@ -142,11 +142,12 @@ for link in pagelists:
           for result_category in result_categories:
               length_name_start= sub_tree_string.find(result_category)
               try:
-                length_name_end = sub_tree_string.find(result_categories[result_categories.index(result_category)+1])
+                length_name_end = sub_tree_string[length_name_start:].find(result_categories[result_categories.index(result_category)+1])
               except IndexError:
-                length_name_end = sub_tree_string.find('V.2.4) A szerződés/rész')
+                length_name_end = 10
           
-              subsub_tree_string = sub_tree_string[length_name_start:length_name_end]
+              subsub_tree_string = sub_tree_string[length_name_start:length_name_start+length_name_end]
+              print('nyertes,150:', length_name_start, length_name_end)
               parser = etree.HTMLParser()
               subsub_tree   = etree.parse(StringIO(subsub_tree_string), parser)
               result_items = subsub_tree.xpath('//span[@style="font-weight:200;color: #336699;"]/text()')
