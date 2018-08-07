@@ -1,311 +1,152 @@
 from lxml import html
 import requests
-import time
-from datetime import datetime, timedelta
+from lxml import etree
+from io import StringIO, BytesIO
 import json
-import pandas as pd
-import numpy as np
-#import matplotlib.pyplot as plt
+link1= 'http://www.kozbeszerzes.hu/adatbazis/megtekint/hirdetmeny/portal_'
+pagelists=[]
+for num in range(1,4):
+    pagelists.append(str(link1) + str(num+8620) + '_2018/')
+print(pagelists)
+notice = {}
+for link in pagelists:
+    notice_page = requests.get(link)
+    tree = html.fromstring(notice_page.content)
+    notice_attributes = {}
+    notice_attributes_all = {}
 
-link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
-modelpage = requests.get(link)
-
-tree = html.fromstring(modelpage.content)
-maxlist = tree.xpath('//li[@class="last"]/a/@href')
-#get the url lists, where the actual url of the cars can be found, if there is 1 page, append just that one
-try:
-    string = maxlist[0]
-except IndexError:
-    pagelists = [link]
-else:
-    string = maxlist[0]
-    len = string.find('page')
-    maxpage = string[(len)+4:]
-    link = string[:len]
-    pagelists = []
-    for maxpage in range(1,int(maxpage)+1):
-        pagelists.append(str(link) + "page" + str(maxpage))
+    notice_page = (notice_page.content).decode('utf-8')
+    
+    notice_table_names = tree.xpath('//table[@class="notice__heading"]/tr/th/text()')
+    
+    for notice_table_name in notice_table_names:
         
-#Get the ID-s and URL's of the cars in a dictionary
-cars_pages_ids={}
-for pagelist in pagelists:
-    pagelis = requests.get(pagelist)
-    tree = html.fromstring(pagelis.content)
-    
-    #Get the url's of the cars
-    carpages = tree.xpath('//a[@class=""]/@href')
-    
-    #Remove dupplicates
-    hirdetes_kodok = set(carpages)
-    
-    cars_pages_id={}
-    
-    #Making the ID-s from the URL links
-    for hirdetes_kod in hirdetes_kodok:
-        leng = hirdetes_kod.rfind('-')
-        kod = hirdetes_kod[(leng)+1:]
-        if kod.isdigit():
-            cars_pages_id[kod] = hirdetes_kod
-        else:
-            cars_pages_id[kod] = 'error'
-
-    #Build a dictionary with the webpages and car ID's
-
-    cars_pages_ids.update(cars_pages_id)
-    
-# search for the new cars
-
-#load the database
-filename = 'database2.json'
-with open(filename) as f_obj:
-    cars_existing = json.load(f_obj)
-
-download_cars = {}  
-for cars_pages_id_check, cars_urls in cars_pages_ids.items():
-    if cars_pages_id_check in cars_existing.keys():
-        continue
-    else:
-        download_cars[cars_pages_id_check] = cars_urls
-new_cars=[]
-car_ids = []
-car_attributions_all = []
-car_url_list = download_cars.values()
-
-
-#Get all the information for a car as it can
-for page in car_url_list:
-    car_id =[]
-    car_attributions = []
-    carpage = requests.get(page)
-    tree = html.fromstring(carpage.content)
-    table_header = tree.xpath('//table[@class="hirdetesadatok"]/tr/th/text()')
-    car_id = tree.xpath('//div[@class="hagomb-belso"]/strong/text()')
-    attributum_names = tree.xpath('//table[@class="hirdetesadatok"]/tr/td/text()')
-    attributum_values = tree.xpath(
-        '//table[@class="hirdetesadatok"]/tr/td/strong/text()')
-    items_categories = tree.xpath('//div[@class="col-xs-28 col-sm-14"]/h4/text()')
-    items = tree.xpath('//div[@class="col-xs-28 col-sm-14"]/ul/li/text()')
-    description = tree.xpath('//div[@class="leiras"]/div/text()')
-    category = tree.xpath('//a[@type="kategoria"]/text()')
-    marka = tree.xpath('//a[@type="marka"]/text()')
-    modellcsoport = tree.xpath('//a[@type="modellcsoport"]/text()')
-    modell = tree.xpath('//a[@type="modell"]/text()')
-    try: 
-        attributum_names.remove('Extrákkal növelt ár:')
+        length_name_find = notice_page.find(notice_table_name)
+        length_name_start= notice_page[length_name_find:].find('<td>')
+        length_name_end = notice_page[length_name_find:].find('</td></tr>')
+        tree_name_string = notice_page[length_name_find+length_name_start+4:length_name_find+length_name_end]
+        notice_attributes[notice_table_name] =  tree_name_string
         
-    except ValueError:
-        sale_price = 0
-    else:
-        sale_price = 1
-        try:
-            attributum_names.remove('Akció feltételei:')
-            attributum_values.insert(0,min(tree.xpath('//span[@class="arsorpiros"]/text()')))
-        except ValueError:
-            sale_price = 1
-                
-    if sale_price ==1:
-        try:
-            attributum_names.remove('Akciós ár:')
-        except ValueError:
-            blabla=1
+        #HREF correction
+        
+        if notice_table_name == 'Letöltés:':
+             
+            length_name_find = notice_page.find(notice_table_name)
+            length_name_start= notice_page[length_name_find:].find('href="')
+            length_name_end = notice_page[length_name_find+7:].find('target="')
+            tree_name_string = notice_page[length_name_find+length_name_start+7:length_name_find+length_name_end+5]
+            tree_name_string = 'http://www.kozbeszerzes.hu/' + tree_name_string
+            notice_attributes[notice_table_name] =  tree_name_string
+        
+        if notice_table_name == 'Közbeszerzési eljárás:':
+            length_name_find = notice_page.find(notice_table_name)
+            length_name_start= notice_page[length_name_find:].find('href="')
+            length_name_end = notice_page[length_name_find+7:].find('target="')
+            tree_name_string = notice_page[length_name_find+length_name_start+6:length_name_find+length_name_end+5]
+            notice_attributes[notice_table_name] =  tree_name_string
+    
+    #Ajánlatkérő
+    notice_attributes['Ajánlakérő:'] ={}
+    contracting_authority={}
+    length_name_start= notice_page.find('I.1) Név és címek')
+    length_name_end = notice_page.find('I.2) Közös közbeszerzés')
+    sub_tree_string = notice_page[length_name_start:length_name_end]
+    
+    parser = etree.HTMLParser()
+    sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
+    contracting_authority_names = sub_tree.xpath('//div[@style="padding-left:2em;"]/text()')
+    for contracting_authority_name in contracting_authority_names:
+        length_name_find = sub_tree_string.find(contracting_authority_name)
+        length_name_start= sub_tree_string[length_name_find:].find('<span')
+        length_name_end = sub_tree_string[length_name_find:].find('</span>')
+        tree_name_string = sub_tree_string[length_name_find+length_name_start+47:length_name_find+length_name_end]
+        contracting_authority[contracting_authority_name] =  tree_name_string
+    notice_attributes['Ajánlakérő:'] = contracting_authority
+    notice_attributes['Ajánlakérő:']['Ajánlatkérő típusa:'] = notice_attributes['Ajánlatkérő típusa:']
+    notice_attributes['Ajánlakérő:']['Ajánlatkérő fő tevényeségi köre:'] = notice_attributes['Ajánlatkérő fő tevényeségi köre:']
+    notice_attributes_all['Alap adatok'] = notice_attributes
+    
+    
+    #Tárgy
+    
+    subject={}
+    length_name_start= notice_page.find('II. szakasz:')
+    length_name_end = notice_page.find('III. szakasz:')
+    if length_name_end ==-1 :
+        length_name_end = notice_page.find('IV. szakasz')
+    
+    sub_tree_string = notice_page[length_name_start:length_name_end]
+    
+    parser = etree.HTMLParser()
+    sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
+    subject_categories = sub_tree.xpath('//div[@style="padding-left:0px;"]/text()')
+    deleting = ['II.1)','II.2)']
+    for dele in deleting:
+        for sc in subject_categories:
+            if dele in sc:
+                subject_categories.remove(sc)
             
-    try: 
-        attributum_names.remove('Alaptípus ára:')
-    except ValueError:
-        sale_price = 0
-    if sale_price == 1:    
-        attributum_names.insert(0,'Vételár:')
-    
-    car_attributions = dict(zip(attributum_names,attributum_values))
-    try:
-        car_attributions['Leírás'] = description[0]
-    except IndexError:
-        car_attributions['Leírás'] = "Nincs"
-    else:
-        car_attributions['Leírás'] = description[0]
-    car_attributions['Felszereltség'] = tree.xpath('//ul[@class="pontos"]/li/text()')
-    car_attributions['Cím'] = tree.xpath('//div[@class="hagomb-belso"]/text()')[0]
-    helyiseg = tree.xpath('//meta[@name="description"]/@content')[0]
-    car_attributions['Helyiség'] = helyiseg[helyiseg.rfind(':')+2:helyiseg.find(')')]
-    car_attributions['Kategória'] = category[0]
-    car_attributions['Márka'] = marka[0]
-    car_attributions['Hirdetés feladása'] = (datetime.strftime(datetime.now(), '%Y-%m-%d'))
-    car_attributions['Hirdetés leszedése'] = None
-    car_attributions['Évjárat év'] = None
-    car_attributions['Évjárat hónap'] = None
-    try:
-        car_attributions['Teljesítmény(LE)'] = car_attributions['Teljesítmény:'][car_attributions['Teljesítmény:'].find(',')+2:car_attributions['Teljesítmény:'].find('LE')-1]
-    except KeyError:
-        c=0
-  #no need  
-    #Formatting 'Évjárat' to creating year, and months
-  #  if car_attributions['Évjárat:'] != None:
-  #      if car_attributions['Évjárat:'].find('(') != -1:
-  #          ev_honap = car_attributions['Évjárat:'][:(car_attributions['Évjárat:'].find('('))]
-  #          car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
-  #          car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
-  #      elif car_attributions['Évjárat:'].find('/') != -1:
-  #          ev_honap = car_attributions['Évjárat:']
-  #          car_attributions['Évjárat év'] = ev_honap[:ev_honap.find('/')]
-  #         car_attributions['Évjárat hónap'] = ev_honap[ev_honap.find('/')+1:]
-  #      else:
-  #          car_attributions['Évjárat év'] = car_attributions['Évjárat:']    
-    
-    try:
-        car_attributions['Sebességváltó fajtája:'] != None
-    except KeyError:
-        c=0
-    else:
-        if car_attributions['Sebességváltó fajtája:'] != None:
-            car_attributions['Sebességváltó típus'] = car_attributions['Sebességváltó fajtája:'][:car_attributions['Sebességváltó fajtája:'].find('(')]
-            car_attributions['Sebességváltó fokozat'] = car_attributions['Sebességváltó fajtája:'][car_attributions['Sebességváltó fajtája:'].find('(')+1:car_attributions['Sebességváltó fajtája:'].find('(')+2]    
-    try:
-        car_attributions['Modellcsoport'] = modellcsoport[0]
-    except IndexError:
-        car_attributions['Modellcsoport'] = "Nincs"
-    else:
-        car_attributions['Modellcsoport'] = modellcsoport[0]
-    car_attributions['Modell'] = modell[0]
-    
-#formatting the attributions of the car, eg. cut the spaces and metrics
-    #Get rid of ':' in keys
-    car_attributions = { k.replace(':', ''): v for k, v in car_attributions.items() }
-    
-    #Format values
-    for k, value in car_attributions.items():
-        #In case of the replace function doesn't work, don't do anything
+    for subject_category in subject_categories:
+        length_name_start= notice_page.find(subject_category)
         try:
-            value=value.replace('\xa0','')
-        except AttributeError:
-            continue
-        else:
-            if k == ('Leírás'):
-                continue
-            elif k == ('Okmányok jellege'):
-                continue
-            elif k == ('Felszereltség'):
-                continue
-            elif k ==('Cím'):
-                continue
-            elif k ==('Tető'):
-                continue
-            else:
-                value=value.replace('\xa0','')
-                value=value.replace('Ft','')
-                value=value.replace('€','')
-                value=value.replace('km','')
-                value=value.replace(' ','')
-                value=value.replace('kg','')
-                value=value.replace('cm³','')
-                value=value.replace('f\u0151','')
-                value=value.replace('liter','')
-                
-            car_attributions.update({k: value})
+            length_name_end = notice_page.find(subject_categories[subject_categories.index(subject_category)+1])
+        except IndexError:
+            length_name_end = notice_page.find('III. szakasz:')
+            if length_name_end ==-1 :
+                length_name_end = notice_page.find('IV. szakasz')
+
+        sub_tree_string = notice_page[length_name_start:length_name_end]
+        parser = etree.HTMLParser()
+        sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
+        subject_items = sub_tree.xpath('//span[@style="font-weight:200;color: #336699;"]/text()')
+        subject[subject_category]=subject_items
     
-    car_attributions_all.append(car_attributions)
-    car_ids.append(car_id[0])
+    notice_attributes_all['Tárgy']= subject
+    #eredmény
+    notice_attributes_all['Eredmény'] ={}
+    
+    #megkötés dátuma
+    length_name_start= notice_page.find('V.2.1) A szerződés megkötésének dátuma')
+    length_name_end = notice_page.find('V.2.2) Ajánlatokra vonatkozó információk')
+    sub_tree_string = notice_page[length_name_start:length_name_end]
+    parser = etree.HTMLParser()
+    sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
+    result_items = sub_tree.xpath('//span[@style="font-weight:200;color: #336699;"]/text()')
+    result_date = result_items[0]
+    notice_attributes_all['Eredmény']['Szerződés megkötés dátuma']= result_date
+    
+    #nyertes
+    result_contractor_attrib = {}
+    length_name_start= notice_page.find('V.2.3) A nyertes ajánlattevő neve és címe')
+    length_name_end = notice_page.find('V.2.4) A szerződés/rész')
+    sub_tree_string = notice_page[length_name_start:length_name_end]
+    parser = etree.HTMLParser()
+    sub_tree   = etree.parse(StringIO(sub_tree_string), parser)
+    result_categories = sub_tree.xpath('//div[@style="padding-left:2em;"]/text()')
+    
+    for result_category in result_categories:
+        length_name_start= sub_tree_string.find(result_category)
+        try:
+          length_name_end = sub_tree_string.find(result_categories[result_categories.index(result_category)+1])
+        except IndexError:
+          length_name_end = sub_tree_string.find('V.2.4) A szerződés/rész')
+    
+        subsub_tree_string = sub_tree_string[length_name_start:length_name_end]
+        parser = etree.HTMLParser()
+        subsub_tree   = etree.parse(StringIO(subsub_tree_string), parser)
+        result_items = subsub_tree.xpath('//span[@style="font-weight:200;color: #336699;"]/text()')
+        try:
+          result_contractor_attrib[result_category]=result_items[0]
+        except IndexError:
+          result_contractor_attrib[result_category] = None
+          
+    notice_attributes_all['Nyertes'] = result_contractor_attrib
+    notice[notice_attributes['Iktatószám:']] = notice_attributes_all
+print(notice.keys())
+#print(notice_attributes_all)
+#export
 
-#Build a dictionary with the car ID's and all the infos
-new_cars = dict(zip(car_ids, car_attributions_all))
-
-#update the advertisement end date of removed cars TEMP.DISABLED
-
-#for cars_existing_key, cars_existing_values in cars_existing.items():
-#    if cars_existing_key not in cars_pages_ids.keys():
-#        cars_existing_values['Hirdetés leszedése'] = (datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d'))
-
-#Add the new cars to the original database
-cars_existing.update(new_cars)
-
-#import the cars to a Panda DataFramework object
-cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
-
-#Formatting Állapot and Üzemenyag categories to 2 categories each / Állapot: Normal or Sérült, Üzemanyag: Benzin or Diesel or Alt.
-cardata['Állapot'] = cardata['Állapot'].str.replace('Sérülésmentes', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Megkímélt', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Kitűnő', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Újszerű', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Enyhénsérült', 'Sérült')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Motorhibás', 'Sérült')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('Benzin/Gáz', 'Alternatív')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('Etanol', 'Alternatív')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('LPG', 'Alternatív')
-
-#setting the proper type of dtypes
-
-datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
-categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
-
-for datetime1 in datetimes:
-  cardata[datetime1] = cardata[datetime1].astype('datetime64')
-for category1 in categories:
-  cardata[category1] = cardata[category1].astype('category')
-
-#convert dates to date types
-dates1 = ['Évjárat','Műszaki vizsga érvényes']
-for date1 in dates1:
-    cardata[date1]= pd.to_datetime(cardata[date1], errors='coerce')
-
-#ensure that were numerical data is a must, there would be only num data
-
-numdatas = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg','Sebességváltó fokozat','Szállítható szem. száma', 'Teljes tömeg', 'Teljesítmény(LE)', 'Vételár', 'Vételár EUR']
-for numdata in numdatas:
-    cardata[numdata] =pd.to_numeric(cardata[numdata], errors='coerce')
-
-#additional variables in Pandas
-cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
-cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
-cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
-cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
-
-#showing a spec row
-#print(cardata.ix[12963080])
-#remove the rows, where in a spec columns has NaN
-#cardata = cardata.dropna(subset=['Kilométeróra állása'])
-
-#import database to Pandas
-#cardata = pd.read_json(path_or_buf= 'database2.json', orient='index')
-
-#export data to json
-filename = 'database2.json'
-with open(filename, 'w') as f_obj:
-    json.dump(cars_existing,f_obj)
-
-#running OLS multilinear regression analysis
-#clear the datas
-
-cardata = cardata.dropna(subset=['Évjárat'])
-cardata = cardata.dropna(subset=['Vételár'])
-cardata = cardata.dropna(subset=['Autó kora(nap)'])
-#cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
-#cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
-cardata = cardata.drop(cardata[cardata['Üzemanyag'] == 'Alternatív'].index)
-
-cardata['Telj'] = cardata['Teljesítmény(LE)']
-cardata['km'] = cardata['Kilométeróra állása']
-cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(int))*-1
-
-#Design matrices
-#Notice that dmatrices has split: the categorical variable into a set of indicator variables.
-#added a constant to the exogenous regressors matrix.
-#returned pandas DataFrames instead of simple numpy arrays. This is useful because DataFrames allow statsmodels to carry-over meta-data (e.g. variable names) when reporting results.
-from patsy import dmatrices
-y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=cardata, return_type='dataframe')
-
-#Model fit and summary
-model = sm.OLS(y,X).fit()
-print(model.summary())
-#print figures
-print(model.summary())
-fig = plt.figure(figsize=(15,8))
-fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
-plt.show()
-
-#values must have add to the predition
-print(X.columns)
-#Predict new value
-Xnew = np.asarray((1,0,0,1,0,104500,2600))
-ynewpred= model.predict(Xnew)
-#predected value
-print(ynewpred)
-
+json = json.dumps(notice,  indent=4, ensure_ascii=False)
+f = open("dict.json","w")
+f.write(json)
+f.close()
