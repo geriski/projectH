@@ -1,9 +1,10 @@
 """
-Contains the related functions to projectH
+Contains the related modules to projectH
 @author: geriski
 """
 import requests
 from lxml import html
+import json
 
 def get_url_list(link):
     """
@@ -56,3 +57,19 @@ def get_url_list(link):
     
         cars_pages_ids.update(cars_pages_id)
     return cars_pages_ids
+    
+def searching_new_cars(cars_pages_ids, cars_existing):
+    """
+    Searching for the new cars.
+    """
+    
+
+    #compare the new id's to the old ones
+    download_cars = {}  
+    for cars_pages_id_check, cars_urls in cars_pages_ids.items():
+        if cars_pages_id_check in cars_existing.keys():
+            continue
+        else:
+            download_cars[cars_pages_id_check] = cars_urls
+    car_url_list = download_cars.values()
+    return car_url_list
