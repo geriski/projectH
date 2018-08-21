@@ -6,18 +6,18 @@ import json
 import pandas as pd
 import numpy as np
 #import matplotlib.pyplot as plt
-import functions as f
+import build as b
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 
-cars_pages_ids = f.get_url_list(link)
+cars_pages_ids = b.get_url_list(link)
 
 #load the existing database
 filename = 'database2.json'
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
-car_url_list = f.searching_new_cars(cars_pages_ids,cars_existing)
+car_url_list = b.searching_new_cars(cars_pages_ids,cars_existing)
 
 new_cars=[]
 car_ids = []
