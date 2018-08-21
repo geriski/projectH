@@ -75,7 +75,7 @@ def searching_new_cars(cars_pages_ids, cars_existing):
             download_cars[cars_pages_id_check] = cars_urls
     car_url_list = download_cars.values()
     return car_url_list
-def get_car_info(car_url_list):
+def download_new_cars(car_url_list):
     """
     Download all information available for the cars and format it.
     """
