@@ -1,5 +1,5 @@
 """
-Contains the related modules to projectH
+Contains the related funcitions to build the database for projectH
 @author: geriski
 """
 import requests
