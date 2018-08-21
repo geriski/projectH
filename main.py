@@ -10,38 +10,11 @@ import modules as m
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 
-pagelists = m.get_url_list(link)
-        
-#Get the ID-s and URL's of the cars in a dictionary
-cars_pages_ids={}
-for pagelist in pagelists:
-    pagelis = requests.get(pagelist)
-    tree = html.fromstring(pagelis.content)
-    
-    #Get the url's of the cars
-    carpages = tree.xpath('//a[@class=""]/@href')
-    
-    #Remove dupplicates
-    hirdetes_kodok = set(carpages)
-    
-    cars_pages_id={}
-    
-    #Making the ID-s from the URL links
-    for hirdetes_kod in hirdetes_kodok:
-        leng = hirdetes_kod.rfind('-')
-        kod = hirdetes_kod[(leng)+1:]
-        if kod.isdigit():
-            cars_pages_id[kod] = hirdetes_kod
-        else:
-            cars_pages_id[kod] = 'error'
+cars_pages_ids = m.get_url_list(link)
 
-    #Build a dictionary with the webpages and car ID's
+#search for the new cars
 
-    cars_pages_ids.update(cars_pages_id)
-    
-# search for the new cars
-
-#load the database
+#load the existing database
 filename = 'database2.json'
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
