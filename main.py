@@ -6,25 +6,11 @@ import json
 import pandas as pd
 import numpy as np
 #import matplotlib.pyplot as plt
+import modules as m
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
-modelpage = requests.get(link)
 
-tree = html.fromstring(modelpage.content)
-maxlist = tree.xpath('//li[@class="last"]/a/@href')
-#get the url lists, where the actual url of the cars can be found, if there is 1 page, append just that one
-try:
-    string = maxlist[0]
-except IndexError:
-    pagelists = [link]
-else:
-    string = maxlist[0]
-    len = string.find('page')
-    maxpage = string[(len)+4:]
-    link = string[:len]
-    pagelists = []
-    for maxpage in range(1,int(maxpage)+1):
-        pagelists.append(str(link) + "page" + str(maxpage))
+pagelists = m.get_url_list(link)
         
 #Get the ID-s and URL's of the cars in a dictionary
 cars_pages_ids={}
