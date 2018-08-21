@@ -23,7 +23,7 @@ new_cars=[]
 
 #Get all the information for a car as it can
 
-new_cars = b.get_car_info(car_url_list)
+new_cars = b.download_new_cars(car_url_list)
 
 #update the advertisement end date of removed cars TEMP.DISABLED
 
