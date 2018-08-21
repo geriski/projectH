@@ -6,11 +6,11 @@ import json
 import pandas as pd
 import numpy as np
 #import matplotlib.pyplot as plt
-import modules as m
+import functions as f
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 
-cars_pages_ids = m.get_url_list(link)
+cars_pages_ids = f.get_url_list(link)
 
 #search for the new cars
 
