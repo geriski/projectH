@@ -12,23 +12,16 @@ link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 
 cars_pages_ids = f.get_url_list(link)
 
-#search for the new cars
-
 #load the existing database
 filename = 'database2.json'
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
-download_cars = {}  
-for cars_pages_id_check, cars_urls in cars_pages_ids.items():
-    if cars_pages_id_check in cars_existing.keys():
-        continue
-    else:
-        download_cars[cars_pages_id_check] = cars_urls
+car_url_list = f.searching_new_cars(cars_pages_ids,cars_existing)
+
 new_cars=[]
 car_ids = []
 car_attributions_all = []
-car_url_list = download_cars.values()
 
 
 #Get all the information for a car as it can
