@@ -2,6 +2,8 @@
 Contains the related functions to build the database of projectH
 @author: geriski
 """
+
+
 import requests
 from lxml import html
 import json
@@ -9,9 +11,11 @@ import time
 from datetime import datetime, timedelta
 
 def get_url_list(link):
+    
     """
     Bulid a dictionary with the car ID's and the webpages URL addresses.
     """
+    
     modelpage = requests.get(link)
     tree = html.fromstring(modelpage.content)
     
@@ -61,11 +65,11 @@ def get_url_list(link):
     return cars_pages_ids
     
 def searching_new_cars(cars_pages_ids, cars_existing):
+    
     """
     Searching for the new cars.
-    """
+    """    
     
-
     #compare the new id's to the old ones
     download_cars = {}  
     for cars_pages_id_check, cars_urls in cars_pages_ids.items():
@@ -76,6 +80,7 @@ def searching_new_cars(cars_pages_ids, cars_existing):
     car_url_list = download_cars.values()
     return car_url_list
 def download_new_cars(car_url_list):
+    
     """
     Download all information available for the cars and format it.
     """
@@ -203,9 +208,11 @@ def download_new_cars(car_url_list):
     return new_cars
     
 def removed_cars_date(cars_pages_ids,cars_existing):
+    
     """
     Update the advertisement end date of removed cars.
     """
+    
     for cars_existing_key, cars_existing_values in cars_existing.items():
         if cars_existing_key not in cars_pages_ids.keys():
             cars_existing_values['Hirdetés leszedése'] = (datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d'))
