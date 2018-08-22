@@ -18,18 +18,11 @@ with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
 car_url_list = b.searching_new_cars(cars_pages_ids,cars_existing)
-
 new_cars=[]
-
-#Get all the information for a car as it can
-
 new_cars = b.download_new_cars(car_url_list)
 
-#update the advertisement end date of removed cars TEMP.DISABLED
-
-#for cars_existing_key, cars_existing_values in cars_existing.items():
-#    if cars_existing_key not in cars_pages_ids.keys():
-#        cars_existing_values['Hirdetés leszedése'] = (datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d'))
+#TEMPORARLY DISABLED
+#b.removed_cars_date(cars_pages_ids,cars_existing)
 
 #Add the new cars to the original database
 cars_existing.update(new_cars)
