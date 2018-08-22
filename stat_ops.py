@@ -59,3 +59,13 @@ def set_dtypes(cardata):
     for numdata in numdatas:
         cardata[numdata] =pd.to_numeric(cardata[numdata], errors='coerce')
     return cardata
+    
+def additional_variables(cardata):
+    """
+    Adding additional variables to the DataFramework
+    """
+    cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
+    cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
+    cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
+    cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
+    return cardata
