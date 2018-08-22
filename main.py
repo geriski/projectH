@@ -102,8 +102,8 @@ y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=
 #Model fit and summary
 model = sm.OLS(y,X).fit()
 print(model.summary())
+
 #print figures
-print(model.summary())
 fig = plt.figure(figsize=(15,8))
 fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
 plt.show()
