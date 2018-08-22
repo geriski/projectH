@@ -38,12 +38,7 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 #import json database to Pandas DataFramework
 #cardata = pd.read_json(path_or_buf= filename, orient='index')
 
-#Creating special categories {Column_name1:{Replace_to1:[Replace_from1,Replace_from2], Column_name2:{Replace_to2:[Replace_from1,Replace_from2]}}
-categories = {'Állapot':{'Normál':['Sérülésmentes','Megkímélt','Kitűnő','Újszerű'],'Sérült': ['Enyhénsérült','Motorhibás']}, 'Üzemanyag':{'Alternatív':['Benzin/Gáz','Etanol', 'LPG']}}
-for cat, cat_attr in categories.items():
-    for cat_tos, cat_froms in cat_attr.items():
-        for cat_from in cat_froms:
-            cardata[cat] = cardata[cat].str.replace(cat_from, cat_tos)
+cardata = s.make_categoricals(cardata)
 
 #setting the proper type of dtypes
 
