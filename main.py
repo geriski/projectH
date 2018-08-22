@@ -42,11 +42,7 @@ cardata = s.make_categoricals(cardata)
 
 cardata = s.set_dtypes(cardata)
 
-#additional variables in Pandas
-cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
-cardata['Autó kora(nap)']=cardata['Évjárat'] - pd.to_datetime('today')
-cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
-cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
+cardata = s.additional_variables(cardata)
 
 #showing a spec row
 #print(cardata.ix[12963080])
