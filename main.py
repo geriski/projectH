@@ -38,24 +38,20 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 #import json database to Pandas DataFramework
 #cardata = pd.read_json(path_or_buf= filename, orient='index')
 
-#Formatting Állapot and Üzemenyag categories to 2 categories each / Állapot: Normal or Sérült, Üzemanyag: Benzin or Diesel or Alt.
-cardata['Állapot'] = cardata['Állapot'].str.replace('Sérülésmentes', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Megkímélt', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Kitűnő', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Újszerű', 'Normál')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Enyhénsérült', 'Sérült')
-cardata['Állapot'] = cardata['Állapot'].str.replace('Motorhibás', 'Sérült')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('Benzin/Gáz', 'Alternatív')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('Etanol', 'Alternatív')
-cardata['Üzemanyag'] = cardata['Üzemanyag'].str.replace('LPG', 'Alternatív')
+#Creating special categories {Column_name1:{Replace_to1:[Replace_from1,Replace_from2], Column_name2:{Replace_to2:[Replace_from1,Replace_from2]}}
+categories = {'Állapot':{'Normál':['Sérülésmentes','Megkímélt','Kitűnő','Újszerű'],'Sérült': ['Enyhénsérült','Motorhibás']}, 'Üzemanyag':{'Alternatív':['Benzin/Gáz','Etanol', 'LPG']}}
+for cat, cat_attr in categories.items():
+    for cat_tos, cat_froms in cat_attr.items():
+        for cat_from in cat_froms:
+            cardata[cat] = cardata[cat].str.replace(cat_from, cat_tos)
 
 #setting the proper type of dtypes
 
 datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
 categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
 
-for datetime1 in datetimes:
-  cardata[datetime1] = cardata[datetime1].astype('datetime64')
+#for datetime1 in datetimes:
+#  cardata[datetime1] = cardata[datetime1].astype('datetime64')
 for category1 in categories:
   cardata[category1] = cardata[category1].astype('category')
 
@@ -83,9 +79,10 @@ cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
 #clear the datas
 
 #remove the rows, where in a spec columns has NaN
-cardata = cardata.dropna(subset=['Évjárat'])
-cardata = cardata.dropna(subset=['Vételár'])
-cardata = cardata.dropna(subset=['Autó kora(nap)'])
+drop_nans = ['Évjárat', 'Vételár', 'Autó kora(nap)']
+for drop_nan in drop_nans:
+    cardata = cardata.dropna(subset=[drop_nan])
+
 #cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
 #cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
 cardata = cardata.drop(cardata[cardata['Üzemanyag'] == 'Alternatív'].index)
