@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import json
 import pandas as pd
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import build as b
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
@@ -27,8 +27,16 @@ new_cars = b.download_new_cars(car_url_list)
 #Add the new cars to the original database
 cars_existing.update(new_cars)
 
-#import the cars to a Panda DataFramework object
+#export data to json
+filename = 'database2.json'
+with open(filename, 'w') as f_obj:
+    json.dump(cars_existing,f_obj)
+
+#Import the data of the cars to a Panda DataFramework object from the existing dictionary
 cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
+
+#import json database to Pandas DataFramework
+#cardata = pd.read_json(path_or_buf= 'database2.json', orient='index')
 
 #Formatting Állapot and Üzemenyag categories to 2 categories each / Állapot: Normal or Sérült, Üzemanyag: Benzin or Diesel or Alt.
 cardata['Állapot'] = cardata['Állapot'].str.replace('Sérülésmentes', 'Normál')
@@ -70,20 +78,11 @@ cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
 
 #showing a spec row
 #print(cardata.ix[12963080])
-#remove the rows, where in a spec columns has NaN
-#cardata = cardata.dropna(subset=['Kilométeróra állása'])
-
-#import database to Pandas
-#cardata = pd.read_json(path_or_buf= 'database2.json', orient='index')
-
-#export data to json
-filename = 'database2.json'
-with open(filename, 'w') as f_obj:
-    json.dump(cars_existing,f_obj)
 
 #running OLS multilinear regression analysis
 #clear the datas
 
+#remove the rows, where in a spec columns has NaN
 cardata = cardata.dropna(subset=['Évjárat'])
 cardata = cardata.dropna(subset=['Vételár'])
 cardata = cardata.dropna(subset=['Autó kora(nap)'])
@@ -91,6 +90,7 @@ cardata = cardata.dropna(subset=['Autó kora(nap)'])
 #cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
 cardata = cardata.drop(cardata[cardata['Üzemanyag'] == 'Alternatív'].index)
 
+#Renaming columns
 cardata['Telj'] = cardata['Teljesítmény(LE)']
 cardata['km'] = cardata['Kilométeróra állása']
 cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(int))*-1
@@ -111,10 +111,12 @@ fig = plt.figure(figsize=(15,8))
 fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
 plt.show()
 
-#values must have add to the predition
+#Printing required values to the predition
 print(X.columns)
+
 #Predict new value
 Xnew = np.asarray((1,0,0,1,0,104500,2600))
 ynewpred= model.predict(Xnew)
+
 #predected value
 print(ynewpred)
