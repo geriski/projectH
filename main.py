@@ -40,26 +40,7 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
 cardata = s.make_categoricals(cardata)
 
-#setting the proper type of dtypes
-
-datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
-categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája', 'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 'Üzemanyag']
-
-#for datetime1 in datetimes:
-#  cardata[datetime1] = cardata[datetime1].astype('datetime64')
-for category1 in categories:
-  cardata[category1] = cardata[category1].astype('category')
-
-#convert dates to date types
-dates1 = ['Évjárat','Műszaki vizsga érvényes']
-for date1 in dates1:
-    cardata[date1]= pd.to_datetime(cardata[date1], errors='coerce')
-
-#ensure that were numerical data is a must, there would be only num data
-
-numdatas = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg','Sebességváltó fokozat','Szállítható szem. száma', 'Teljes tömeg', 'Teljesítmény(LE)', 'Vételár', 'Vételár EUR']
-for numdata in numdatas:
-    cardata[numdata] =pd.to_numeric(cardata[numdata], errors='coerce')
+cardata = s.set_dtypes(cardata)
 
 #additional variables in Pandas
 cardata['Hirdetési idő(nap)'] = cardata['Hirdetés feladása'] - cardata['Hirdetés leszedése']
