@@ -7,8 +7,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+from patsy import dmatrices
 import build as b
-
+import stat_ops as s
 #Please add the URL link, needs to be parsed and the database file name.
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 filename = 'database2.json'
@@ -38,18 +39,14 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 #import json database to Pandas DataFramework
 #cardata = pd.read_json(path_or_buf= filename, orient='index')
 
+#Prepare the data to analysis
 cardata = s.make_categoricals(cardata)
-
 cardata = s.set_dtypes(cardata)
-
 cardata = s.additional_variables(cardata)
 
-#showing a spec row
-#print(cardata.ix[12963080])
-
 #running OLS multilinear regression analysis
-#clear the datas
 
+#clear the data
 #remove the rows, where in a spec columns has NaN
 drop_nans = ['Évjárat', 'Vételár', 'Autó kora(nap)']
 for drop_nan in drop_nans:
@@ -65,10 +62,10 @@ cardata['km'] = cardata['Kilométeróra állása']
 cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(int))*-1
 
 #Design matrices
-#Notice that dmatrices has split: the categorical variable into a set of indicator variables.
-#added a constant to the exogenous regressors matrix.
-#returned pandas DataFrames instead of simple numpy arrays. This is useful because DataFrames allow statsmodels to carry-over meta-data (e.g. variable names) when reporting results.
-from patsy import dmatrices
+#Notice that dmatrices has split: 1.the categorical variable into a set of indicator variables.
+#2.added a constant to the exogenous regressors matrix. 3.returned pandas DataFrames instead of simple numpy arrays. 
+#This is useful because DataFrames allow statsmodels to carry-over meta-data (e.g. variable names) when reporting results.
+
 y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=cardata, return_type='dataframe')
 
 #Model fit and summary
