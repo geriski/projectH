@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import build as b
 
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
-
 cars_pages_ids = b.get_url_list(link)
 
 #load the existing database
@@ -18,7 +17,6 @@ with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
 car_url_list = b.searching_new_cars(cars_pages_ids,cars_existing)
-new_cars=[]
 new_cars = b.download_new_cars(car_url_list)
 
 #TEMPORARLY DISABLED
