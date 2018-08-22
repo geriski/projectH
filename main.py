@@ -8,11 +8,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import build as b
 
+#Please add the URL link, needs to be parsed and the database file name.
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
+filename = 'database2.json'
+
 cars_pages_ids = b.get_url_list(link)
 
 #load the existing database
-filename = 'database2.json'
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
@@ -26,7 +28,6 @@ new_cars = b.download_new_cars(car_url_list)
 cars_existing.update(new_cars)
 
 #export data to json
-filename = 'database2.json'
 with open(filename, 'w') as f_obj:
     json.dump(cars_existing,f_obj)
 
@@ -34,7 +35,7 @@ with open(filename, 'w') as f_obj:
 cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
 #import json database to Pandas DataFramework
-#cardata = pd.read_json(path_or_buf= 'database2.json', orient='index')
+#cardata = pd.read_json(path_or_buf= filename, orient='index')
 
 #Formatting Állapot and Üzemenyag categories to 2 categories each / Állapot: Normal or Sérült, Üzemanyag: Benzin or Diesel or Alt.
 cardata['Állapot'] = cardata['Állapot'].str.replace('Sérülésmentes', 'Normál')
