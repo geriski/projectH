@@ -3,13 +3,17 @@ import requests
 import time
 from datetime import datetime, timedelta
 import json
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from patsy import dmatrices
+
 import build as b
 import stat_ops as s
+
+
 #Please add the URL link, needs to be parsed and the database file name.
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 filename = 'database2.json'
