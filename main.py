@@ -6,6 +6,7 @@ import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
 import build as b
 
 #Please add the URL link, needs to be parsed and the database file name.
