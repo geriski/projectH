@@ -111,12 +111,12 @@ fig = plt.figure(figsize=(15,8))
 fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
 plt.show()
 
-#Printing required values to the predition
-print(X.columns)
+#Printing required values for predition
+print('\nRequired values for prediction: ', X.columns)
 
 #Predict new value
 Xnew = np.asarray((1,0,0,1,0,104500,2600))
 ynewpred= model.predict(Xnew)
 
-#predected value
-print(ynewpred)
+#Printing predected value
+print('Estimated value: ', ynewpred, ' HUF')
