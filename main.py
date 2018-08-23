@@ -75,10 +75,7 @@ y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=
 model = sm.OLS(y,X).fit()
 print(model.summary())
 
-#print figures
-fig = plt.figure(figsize=(15,8))
-fig = sm.graphics.plot_regress_exog(model, "ido", fig=fig)
-plt.show()
+s.print_figure(model, 'ido')
 
 #Printing required values for predition
 print('\nRequired values for prediction: ', X.columns)
