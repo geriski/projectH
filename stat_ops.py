@@ -25,7 +25,7 @@ def make_spec_categoricals(spec_categories, cardata):
                 cardata[cat] = cardata[cat].str.replace(cat_from, cat_tos)
     return cardata
 
-def set_dtypes(datetimes, categories, numdatas, cardata):
+def set_dtypes(datetimes, categories, numdata, cardata):
     """
     Setting the proper type of dtypes
     """
@@ -40,8 +40,8 @@ def set_dtypes(datetimes, categories, numdatas, cardata):
     
     #Ensure that were numerical data is a must, there would be only num data
     
-    for numdata in numdatas:
-        cardata[numdata] =pd.to_numeric(cardata[numdata], errors='coerce')
+    for numdata1 in numdata:
+        cardata[numdata1] =pd.to_numeric(cardata[numdata1], errors='coerce')
     return cardata
     
 def additional_variables(cardata):
