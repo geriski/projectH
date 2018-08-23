@@ -69,3 +69,11 @@ def additional_variables(cardata):
     cardata['Műszaki még érvenyes(nap)']=cardata['Műszaki vizsga érvényes'] - pd.to_datetime('today')
     cardata['Évjárat'] =pd.to_numeric(cardata['Évjárat'], errors='coerce')
     return cardata
+    
+def drop_nan(drop_nans, cardata):
+    """
+    Remove the rows, where in a spec columns has NaN.
+    """
+    for drop_nan in drop_nans:
+        cardata = cardata.dropna(subset=[drop_nan])
+    return cardata
