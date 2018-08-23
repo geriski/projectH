@@ -10,7 +10,7 @@ import statsmodels.api as sm
 import time
 from datetime import datetime, timedelta
 
-def make_categoricals(cardata):
+def make_spec_categoricals(spec_categories, cardata):
     """
     Creating special categories. Template:
     {Column_name1:
@@ -18,12 +18,8 @@ def make_categoricals(cardata):
     Column_name2:
       {Replace_to2:[Replace_from1,Replace_from2]}}
     """
-    categories = {'Állapot':
-                {'Normál':['Sérülésmentes','Megkímélt','Kitűnő','Újszerű'],
-                 'Sérült': ['Enyhénsérült','Motorhibás']}, 
-              'Üzemanyag':
-                {'Alternatív':['Benzin/Gáz','Etanol', 'LPG']}}
-    for cat, cat_attr in categories.items():
+
+    for cat, cat_attr in spec_categories.items():
         for cat_tos, cat_froms in cat_attr.items():
             for cat_from in cat_froms:
                 cardata[cat] = cardata[cat].str.replace(cat_from, cat_tos)
