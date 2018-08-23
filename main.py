@@ -18,12 +18,11 @@ import stat_ops as s
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 filename = 'database2.json'
 
-cars_pages_ids = b.get_url_list(link)
-
 #load the existing database
 with open(filename) as f_obj:
     cars_existing = json.load(f_obj)
 
+cars_pages_ids = b.get_url_list(link)
 car_url_list = b.searching_new_cars(cars_pages_ids,cars_existing)
 new_cars = b.download_new_cars(car_url_list)
 
