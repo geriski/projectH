@@ -44,6 +44,16 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
 #Prepare the data to analysis
 cardata = s.make_categoricals(cardata)
+
+datetimes = ['Évjárat','Műszaki vizsga érvényes']   
+categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája',
+              'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 
+              'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 
+              'Üzemanyag']
+numdatas = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg',
+            'Sebességváltó fokozat','Szállítható szem. száma', 'Teljes tömeg', 
+            'Teljesítmény(LE)', 'Vételár', 'Vételár EUR']
+
 cardata = s.set_dtypes(cardata)
 cardata = s.additional_variables(cardata)
 
