@@ -77,3 +77,11 @@ def drop_nan(drop_nans, cardata):
     for drop_nan in drop_nans:
         cardata = cardata.dropna(subset=[drop_nan])
     return cardata
+    
+def print_figure(model, variable_to_show):
+    """
+    Printing 4 kind of plot figure.
+    """
+    fig = plt.figure(figsize=(15,8))
+    fig = sm.graphics.plot_regress_exog(model, variable_to_show, fig=fig)
+    plt.show()
