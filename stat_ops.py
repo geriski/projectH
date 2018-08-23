@@ -29,33 +29,21 @@ def make_categoricals(cardata):
                 cardata[cat] = cardata[cat].str.replace(cat_from, cat_tos)
     return cardata
 
-def set_dtypes(cardata):
+def set_dtypes(datetimes, categories, numdatas, cardata):
     """
     Setting the proper type of dtypes
     """
 
-    datetimes = ['Hirdetés feladása', 'Hirdetés leszedése']
-    categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája',
-                  'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 
-                  'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 
-                  'Üzemanyag']
-    
-    #TEMPORARLY DISABLED
-    #for datetime1 in datetimes:
-    #  cardata[datetime1] = cardata[datetime1].astype('datetime64')
     for category1 in categories:
       cardata[category1] = cardata[category1].astype('category')
     
     #Convert dates to date types
-    dates1 = ['Évjárat','Műszaki vizsga érvényes']
-    for date1 in dates1:
+    
+    for date1 in datetimes:
         cardata[date1]= pd.to_datetime(cardata[date1], errors='coerce')
     
     #Ensure that were numerical data is a must, there would be only num data
     
-    numdatas = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg',
-                'Sebességváltó fokozat','Szállítható szem. száma', 'Teljes tömeg', 
-                'Teljesítmény(LE)', 'Vételár', 'Vételár EUR']
     for numdata in numdatas:
         cardata[numdata] =pd.to_numeric(cardata[numdata], errors='coerce')
     return cardata
