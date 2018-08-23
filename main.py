@@ -53,8 +53,7 @@ cardata = s.additional_variables(cardata)
 #clear the data
 #remove the rows, where in a spec columns has NaN
 drop_nans = ['Évjárat', 'Vételár', 'Autó kora(nap)']
-for drop_nan in drop_nans:
-    cardata = cardata.dropna(subset=[drop_nan])
+cardata = s.drop_nan(drop_nans, cardata)
 
 #cardata = cardata.drop(cardata[cardata['Kilométeróra állása'] < 1100].index)
 #cardata = cardata.drop(cardata[cardata['Vételár'] > 4099000].index)
