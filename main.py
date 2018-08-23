@@ -14,7 +14,7 @@ import build as b
 import stat_ops as s
 
 
-#Please add the URL link, needs to be parsed and the database file name.
+#Add the URL link, needs to be parsed and the database file name.
 link = 'https://www.hasznaltauto.hu/szemelyauto/dacia/logan'
 filename = 'database2.json'
 
@@ -43,7 +43,7 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 #cardata = pd.read_json(path_or_buf= filename, orient='index')
 
 #Prepare the data to analysis
-
+#Add the variables and special category naming scheme.
 spec_categories = {'Állapot':
                         {'Normál':['Sérülésmentes','Megkímélt','Kitűnő','Újszerű'],
                         'Sérült': ['Enyhénsérült','Motorhibás']}, 
@@ -52,16 +52,17 @@ spec_categories = {'Állapot':
 
 cardata = s.make_spec_categoricals(spec_categories, cardata)
 
+#Add the variables which dtype has to be set
 datetimes = ['Évjárat','Műszaki vizsga érvényes']   
 categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája',
               'Kárpit színe (1)', 'Kárpit színe (2)', 'Modell', 'Modellcsoport', 'Márka', 
               'Okmányok jellege', 'Sebességváltó típus', 'Szín', 'Tető', 'Állapot', 
               'Üzemanyag']
-numdatas = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg',
+numdata = ['Ajtók száma', 'Hengerűrtartalom', 'Kilométeróra állása','Saját tömeg',
             'Sebességváltó fokozat','Szállítható szem. száma', 'Teljes tömeg', 
             'Teljesítmény(LE)', 'Vételár', 'Vételár EUR']
 
-cardata = s.set_dtypes(cardata)
+cardata = s.set_dtypes(datetimes, categories, numdata, cardata)
 cardata = s.additional_variables(cardata)
 
 #running OLS multilinear regression analysis
