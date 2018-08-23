@@ -43,7 +43,14 @@ cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 #cardata = pd.read_json(path_or_buf= filename, orient='index')
 
 #Prepare the data to analysis
-cardata = s.make_categoricals(cardata)
+
+spec_categories = {'Állapot':
+                        {'Normál':['Sérülésmentes','Megkímélt','Kitűnő','Újszerű'],
+                        'Sérült': ['Enyhénsérült','Motorhibás']}, 
+                    'Üzemanyag':
+                        {'Alternatív':['Benzin/Gáz','Etanol', 'LPG']}}
+
+cardata = s.make_spec_categoricals(spec_categories, cardata)
 
 datetimes = ['Évjárat','Műszaki vizsga érvényes']   
 categories = ['Hajtás','Kivitel', 'Henger-elrendezés', 'Kategória', 'Klíma fajtája',
