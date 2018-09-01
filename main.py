@@ -40,7 +40,7 @@ with open(filename, 'w') as f_obj:
 cardata = pd.DataFrame.from_dict(cars_existing, orient='index')
 
 #import json database to Pandas DataFramework
-#cardata = pd.read_json(path_or_buf= filename, orient='index')
+cardata = pd.read_json(path_or_buf= filename, orient='index')
 
 #Prepare the data to analysis
 #Add the variables and special category naming scheme.
@@ -86,7 +86,7 @@ cardata['ido'] = ((cardata['Autó kora(nap)'] / np.timedelta64(1, 'D')).astype(i
 #2.added a constant to the exogenous regressors matrix. 3.returned pandas DataFrames instead of simple numpy arrays. 
 #This is useful because DataFrames allow statsmodels to carry-over meta-data (e.g. variable names) when reporting results.
 
-y, X = dmatrices('Vételár ~  km + Modell + Állapot + ido + Üzemanyag', data=cardata, return_type='dataframe')
+y, X = dmatrices('Vételár ~ Márka + km + Modell +  ido + Üzemanyag', data=cardata, return_type='dataframe')
 
 #Model fit and summary
 model = sm.OLS(y,X).fit()
